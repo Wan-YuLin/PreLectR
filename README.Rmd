@@ -1,41 +1,31 @@
 ---
-title: "Introduction to Data Visualization"
-subtitle: "Tutorial for NGSprint Data Visualization in Bioinformatics"
-author: "[Kasia Kedzierska](https://kasia.codes/)"
-date: "Created on 06 Sep, 2021 <br>Last compiled on `r format(Sys.time(), '%d %b, %Y')`"
-output: 
-  learnr::tutorial:
-    allow_skip: true
-    progressive: true
+title: "PreLectR"
+subtitle: "Feature Engineering in Sparse Matrices"
+author: Yin Cheng Chen
+date: "Created on 05 Dec, 2024 <br>Last compiled on `r format(Sys.time(), '%d %b, %Y')`"
+output: github_document
 ---
 
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "", echo = TRUE)
 ```
 
 
-`PreLectR` is an R package implementing the PreLect algorithm for feature engineering in sparse data. It supports four tasks: `binary classification`, `multi-class classification`, `regression`, and `time-to-event` analysis. The package leverages `RcppArmadillo` and `parallel` for enhanced performance. For 16S amplicon data, PreLectR provides a seamless workflow to integrate with DADA2 and includes downstream functional enrichment analysis using `PICRUSt2`, ensuring a user-friendly experience.
+`PreLectR` is an R package implementing the PreLect algorithm for feature engineering in sparse data. It supports four tasks: binary classification, multi-class classification, regression, and time-to-event analysis. The package leverages `RcppArmadillo` and `parallel` for enhanced performance. For 16S amplicon data, PreLectR provides a seamless workflow to integrate with DADA2 and includes downstream functional enrichment analysis using `PICRUSt2`, ensuring a user-friendly experience.
 
 
 
 Table of Contents
 ====================
-- [Installation](#Installation)
-- [General usage](#general-usage)
-- [Special tasks](#lambda-tuning)
-- [16s amplicon bioinfoermation workflow](#selection-profile)
-- [Authors](#authors)
-- [Found a Bug](#found-a-bug)
+- [Installation](#in)
+- [General usage](#gu)
+- [Special tasks](#st)
+- [Tutorial for amplicon data](#ta)
+- [Found a Bug](#fb)
 
+***
 
-## Installation
+## Installation {#in}
 
 `PreLectR` can be installed from GitHub using:
 
@@ -44,21 +34,196 @@ install.packages("remotes")
 remotes::install_github("YinchengChen23/PreLectR")
 ```
 
-Package dependencies:
-- for model estimation: `Rcpp` and `RcppArmadillo`
-- for parallel computing: `parallel`, `doParallel`, `foreach`
-- for graphical purposes: `ggplot2` and `patchwork` 
-- for functional enrichment analysis KEGG : `KEGGREST` 
+#### Package Dependencies
 
+-   **For model estimation**: `Rcpp` and `RcppArmadillo`
+-   **For parallel computing**: `parallel`, `doParallel`, `foreach`
+-   **For graphical purposes**: `ggplot2` and `patchwork`
+-   **For functional enrichment analysis (KEGG)**: `KEGGREST`
 
+Due to the use of `RcppArmadillo` and `Rcpp` for compilation, window users may fail to install.
 
-![R logo](man/figures/img1.png)
+***
 
+## General usage {#gu}
 
-## General usage
+#### Automatically Lambda Scanning
 
+The Lasso base method has a hyperparameter, `lambda`, which represents the regularization intensity that needs to be set.
 
 $$
-f(t) = h_0(t)\cdot\ e^{xw}  
+J(\mathbf{w}) = \text{BCE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda} \sum_j \frac{|\mathbf{w}_j|}{p_j} \\
+$$
+Unlike common strategies for parameter tuning (based on performance), we propose a method to determine the parameter based on the variation of the loss value. We propose determining the optimal lambda value based on the inflection point of the loss curve. This point marks the crucial balance where the regularization term outweighs the loss term.
+
+![](Notebook/images/img3.png){width="70%"}
+
+So we design a function `AutoScanning` which can automatically scan the lambda from from $10^{-10}$ to $10^{-1}$, and identify the upper and lower boundaries representing lasso start filtering and lasso drop all features respectively (black dotted line). And divide `k` parts whitin this region as the examining lambdas.
+
+![](Notebook/images/img2.png){width="70%"}
+
+```{r, eval = TRUE}
+library(PreLectR)
+library(patchwork)
+library(ggplot2)
+
+set.seed(42)
+n_samples <- 10
+n_features <- 100
+ 
+X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+print(dim(X_raw))
+
+# feature-wise z-standardization
+X_scaled <- t(scale(t(X_raw)))
+diagnosis <- c('CRC','CRC','control','CRC','control','CRC','control','control','CRC','CRC')
+
+# assign the control-sample at the first order of levels in factor function
+diagnosis <- factor(diagnosis, levels = c('control', 'CRC'))
+
+                                         # task = "classification" OR "regression"
+lrange <- AutoScanning(X_scaled, X_raw, diagnosis, task = "classification", step=30)
+
+print(exp(lrange))
+```
+
+### Lambda Tuning for Feature Selection
+
+Next, we examine each testing lambda by assessing feature prevalence and calculating various performance metrics using the `LambdaTuning` function with a 7/3 train-test split.
+
+Since this procedure is time-consuming, we suggest running it with `nohup` if it takes too long. We also provide an `outpath` option to save the results to a folder of your choice."
+
+Alternatively, if parallel computing is available on your PC, you can also use `LambdaTuningParallel` to accelerate the calculation process.
+
+
+```{r, eval = TRUE, message = FALSE}
+output_dir <- '/home/yincheng23/Course/PLdemo/try1'                # task = "classification" OR "regression"
+tuning_res <- LambdaTuning(X_scaled, X_raw, diagnosis, lrange, outpath=output_dir, spl_ratio=0.7, task="classification")
+
+
+print(dir(output_dir))
+
+# Parallel computing
+# tuning_res <- LambdaTuningParallel(X_scaled, X_raw, diagnosis, lrange, n_cores=10, outpath=output_dir, spl_ratio=0.7)
+```
+
+
+```{r, eval = TRUE}
+head(tuning_res$TuningResult)
+```
+
+
+```{r, eval = TRUE}
+head(tuning_res$PvlDistSummary)
+```
+
+```{r, eval = FALSE}
+# recall the tuning result
+TuningResult <- read.csv(paste0(output_dir,'/TuningResult.csv'))
+PvlDistSummary <- read.csv(paste0(output_dir,'/Pvl_distribution.csv'))
+```
+
+### Optimal Lambda Decision
+
+Determines the optimal lambda value based on the inflection point of the loss curve, which represents the critical balance where the regularization term begins to outweigh the loss term. This function, `LambdaDecision`, finds the inflection point by segmenting the loss curve into n parts through segmented regression.
+
+Segmented regression is implemented using `Recursive Partitioning and Regression Trees`, selecting the first breakpoint as the optimal lambda.
+
+```{r, eval = TRUE}
+# recall the tuning result
+lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummar, maxdepth=5, minbucket=3)
+
+# optimal lambda
+print(lmbd_picking$opt_lmbd)
+
+lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
+```
+
+
+### Feature selection
+
+```{r, eval = TRUE}
+rownames(X_scaled) <- sprintf(paste0("ASV%0", 3, "d"), 1:nrow(X_scaled))
+
+prevalence <- GetPrevalence(X_raw)
+
+s=Sys.time()
+PreLect_out <- PreLect(X_scaled, prevalence, diagnosis, lambda=lmbd_picking$opt_lmbd, task="classification")
+print(Sys.time()-s)
+
+
+featpropt <- FeatureProperty(X_raw, diagnosis, PreLect_out, task="classification")
+
+print(paste(nrow(featpropt[featpropt$selected == 'Selected', ]), 'features were selected'))
+
+print(paste('median of prevalence :', median(featpropt$prevalence[featpropt$selected == 'Selected'])))
+
+
+head(featpropt)
+```
+
+
+### Selection profile visualization
+
+```{r, eval = TRUE}
+ggplot(featpropt, aes(x = prevalence, y = meanAbundance, color=selected)) + geom_point() +
+  scale_color_manual(values = c('Selected'='red', 'Others'='#AAAAAA')) +
+  theme_bw()+ theme(panel.background = element_rect(fill = "white", colour = "white"))
+```
+
+
+```{r, eval = TRUE}
+ggplot(featpropt, aes(x = prevalence, y = variance, color=selected)) + geom_point() +
+  scale_color_manual(values = c('Selected'='red', 'Others'='#AAAAAA')) +
+  coord_trans(y = "log10") +
+  theme_bw()+ theme(panel.background = element_rect(fill = "white", colour = "white"))
+```
+
+```{r, eval = TRUE}
+ggplot(featpropt, aes(x = prevalence_control, y = prevalence_case, color=selected)) + geom_point() +
+  scale_color_manual(values = c('Selected'='red', 'Others'='#AAAAAA')) +
+  theme_bw()+ theme(panel.background = element_rect(fill = "white", colour = "white"))
+```
+
+***
+
+## Special tasks {#st}
+
+`PreLectR` is an R package implementing the PreLect algorithm for feature engineering in sparse data. It supports four tasks, the objective for four task are following function:
+
+$$
+\begin{aligned}
+\text{Binary classification} : J(\mathbf{w}) = \text{BCE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}} \\
+\text{Regression} : J(\mathbf{w}) = \text{MSE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}} \\
+\text{Multi-class classification} : J(\mathbf{w}) = \frac{1}{c} \sum_{l=1}^{c} \left( \text{BCE}(\mathbf{y}_l, \hat{\mathbf{y}}_l) + \color{red}{\lambda \sum_{j=1}^{d} \frac{|\mathbf{w}_{j,l}|}{p_{j,l}}} \right) \\
+\text{Time-to-event} : J(\mathbf{w}) = h_0(t) \cdot e^{\sum{x_i \cdot w}}+ \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}} \\
+\end{aligned}
 $$
 
+Function usage in different tasks :
+
+| Task   | Binary classification | Regression | Multi-class classification | Time-to-event |
+|--------|----------|----------|----------|----------|
+| Step 1 | AutoScanning| AutoScanning   | AutoScanningMultiClass | AutoScanningCoxPH |
+| Step 2 | LambdaTuning | LambdaTuning | LambdaTuningMultiClass | LambdaTuningCoxPH | 
+| Step 2 (optional) | LambdaTuningParallel  | LambdaTuningParallel | LambdaTuningMultiClassParallel | LambdaTuningCoxPHParallel | 
+| Step 3 | LambdaDecision  | LambdaDecision | LambdaDecision | LambdaDecision |
+| Step 4 | PreLect | PreLect | PreLectMultiClass | PreLectCoxPH |
+| Step 5 | FeatureProperty | FeatureProperty | FeatureProperty | FeatureProperty |
+| Step 5 | TaxaProperty | TaxaProperty | Nan | TaxaProperty |
+| Step 6 | GSEATestwithFC | GSEATest | Nan | GSEATestwithFC or GSEATest |
+
+
+Please use help for detailed instructions on how to specify arguments, sure like `?AutoScanningCoxPH`
+
+## Tutorial for amplicon data {#ta}
+
+Please ensure the following package are installed : `learnr`, `shiny`, `DESeq2`, `patchwork`, `PreLectR`.
+And Run the Rmarkdown file [amplicon_tutorial.Rmd](https://github.com/YinchengChen23/PreLectR/Notebook/amplicon_tutorial.Rmd).
+
+***
+
+## Found a Bug {#fb}
+
+Or would like a feature added? Or maybe drop some feedback?
+Just [open a new issue](https://github.com/YinchengChen23/PreLect/issues/new) or send an email to us (yin.cheng.23@gmail.com).
