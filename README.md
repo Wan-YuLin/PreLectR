@@ -50,10 +50,10 @@ users may fail to install.
 The Lasso base method has a hyperparameter, `lambda`, which represents
 the regularization intensity that needs to be set.
 
-$$
-J(\mathbf{w}) = \text{BCE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda} \sum_j \frac{|\mathbf{w}_j|}{p_j} \\
-$$ Unlike common strategies for parameter tuning (based on performance),
-we propose a method to determine the parameter based on the variation of
+$J(\mathbf{w}) = \text{BCE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda} \sum_j \frac{|\mathbf{w}_j|}{p_j}$
+
+Unlike common strategies for parameter tuning (based on performance), we
+propose a method to determine the parameter based on the variation of
 the loss value. We propose determining the optimal lambda value based on
 the inflection point of the loss curve. This point marks the crucial
 balance where the regularization term outweighs the loss term.
@@ -283,7 +283,7 @@ PreLect_out <- PreLect(X_scaled, prevalence, diagnosis, lambda=lmbd_picking$opt_
 print(Sys.time()-s)
 ```
 
-    Time difference of 0.03873539 secs
+    Time difference of 0.03870034 secs
 
 ``` r
 featpropt <- FeatureProperty(X_raw, diagnosis, PreLect_out, task="classification")
@@ -353,14 +353,13 @@ ggplot(featpropt, aes(x = prevalence_control, y = prevalence_case, color=selecte
 feature engineering in sparse data. It supports four tasks, the
 objective for four task are following function:
 
-$$
-\begin{aligned}
-\text{Binary classification} : J(\mathbf{w}) = \text{BCE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}} \\
-\text{Regression} : J(\mathbf{w}) = \text{MSE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}} \\
-\text{Multi-class classification} : J(\mathbf{w}) = \frac{1}{c} \sum_{l=1}^{c} \left( \text{BCE}(\mathbf{y}_l, \hat{\mathbf{y}}_l) + \color{red}{\lambda \sum_{j=1}^{d} \frac{|\mathbf{w}_{j,l}|}{p_{j,l}}} \right) \\
-\text{Time-to-event} : J(\mathbf{w}) = h_0(t) \cdot e^{\sum{x_i \cdot w}}+ \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}} \\
-\end{aligned}
-$$
+$\text{Binary classification} : J(\mathbf{w}) = \text{BCE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}}$
+
+$\text{Regression} : J(\mathbf{w}) = \text{MSE}(\mathbf{y}, \hat{\mathbf{y}}) + \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}}$
+
+$\text{Multi-class classification} : J(\mathbf{w}) = \frac{1}{c} \sum_{l=1}^{c} \left( \text{BCE}(\mathbf{y}_l, \hat{\mathbf{y}}_l) + \color{red}{\lambda \sum_{j=1}^{d}\frac{|\mathbf{w}_{j,l}|}{p_{j,l}}} \right)$
+
+$\text{Time-to-event} : J(\mathbf{w}) = h_0(t) \cdot e^{\sum{x_i \cdot w}}+ \color{red}{\lambda \sum_j \frac{|\mathbf{w}_j|}{p_j}}$
 
 Function usage in different tasks :
 
@@ -382,7 +381,8 @@ sure like `?AutoScanningCoxPH`
 
 Please ensure the following package are installed : `learnr`, `shiny`,
 `DESeq2`, `patchwork`, `PreLectR`. And Run the Rmarkdown file
-[amplicon_tutorial.Rmd](https://github.com/YinchengChen23/PreLectR/Notebook/amplicon_tutorial.Rmd).
+[amplicon_tutorial.Rmd](https://github.com/YinchengChen23/PreLectR/blob/main/Notebook/amplicon_tutorial.Rmd)
+at local.
 
 ------------------------------------------------------------------------
 
