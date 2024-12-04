@@ -97,3 +97,11 @@ concordance_index <- function(time, status, risk) {
     .Call(`_PreLectR_concordance_index`, time, status, risk)
 }
 
+map_ko_to_taxon <- function(KOindex) {
+    .Call(`_PreLectR_map_ko_to_taxon`, KOindex)
+}
+
+GSEA_run <- function(hit_loci, refer_length) {
+    .Call(`_PreLectR_GSEA_run`, hit_loci, refer_length)
+}
+

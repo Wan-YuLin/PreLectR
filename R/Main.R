@@ -149,12 +149,12 @@ PreLect <- function(X, pvl, Y, lambda, task='classification',
   
   if(task == 'classification'){
     if(is.null(levels(Y))){
-      control_sample <- Y[1]
+      control_sample <- as.character(sort(Y[1]))
     } else {
       control_sample <- levels(Y)[1]
     }
     y <- ifelse(Y == control_sample, 0, 1)
-    case_sample <- unique(Y)[unique(Y) != control_sample]
+    case_sample <- as.character(unique(Y)[unique(Y) != control_sample])
   } else if(task == 'regression') {
     y <- Y
   }
@@ -252,11 +252,12 @@ AutoScanning <- function(X_scale, X_raw, Y, task='classification', step=50, run_
   
   if(task == 'classification'){
     if(is.null(levels(Y))){
-      control_sample <- Y[1]
+      control_sample <- as.character(sort(Y[1]))
     } else {
       control_sample <- levels(Y)[1]
     }
     y <- ifelse(Y == control_sample, 0, 1)
+    case_sample <- as.character(unique(Y)[unique(Y) != control_sample])
   } else if(task == 'regression') {
     y <- Y
   }
@@ -387,11 +388,12 @@ LambdaTuning <- function(X_scale, X_raw, Y, lmbdrange, outpath, task='classifica
   
   if(task == 'classification'){
     if(is.null(levels(Y))){
-      control_sample <- Y[1]
+      control_sample <- as.character(sort(Y[1]))
     } else {
       control_sample <- levels(Y)[1]
     }
     y <- ifelse(Y == control_sample, 0, 1)
+    case_sample <- as.character(unique(Y)[unique(Y) != control_sample])
   } else if(task == 'regression') {
     y <- Y
   }
@@ -569,11 +571,12 @@ LambdaTuningParallel <- function(X_scale, X_raw, Y, lmbdrange, n_cores, outpath,
   
   if(task == 'classification'){
     if(is.null(levels(Y))){
-      control_sample <- Y[1]
+      control_sample <- as.character(sort(Y[1]))
     } else {
       control_sample <- levels(Y)[1]
     }
     y <- ifelse(Y == control_sample, 0, 1)
+    case_sample <- as.character(unique(Y)[unique(Y) != control_sample])
   } else if(task == 'regression') {
     y <- Y
   }

@@ -22,7 +22,6 @@ A DataFrame with tendency, mean relative abundance, variance, and prevalence for
 The `FeatureProperty` function retrieves the properties of each feature, allowing users to examine the characteristics of features selected by PreLect.
 }
 \examples{
-」
 
 set.seed(42)
 n_samples <- 10
@@ -36,5 +35,6 @@ diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign the 'health' 
 pvlvec <- GetPrevalence(X_raw)
 
 result <- PreLect(X_scaled, pvlvec, diagnosis, lambda=1e-4, task="classification")
+prop <- FeatureProperty(X_raw, diagnosis, result)
 
 }

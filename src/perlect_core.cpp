@@ -387,3 +387,55 @@ double concordance_index(NumericVector time, NumericVector status, NumericVector
   
   return (concordant_pairs + 0.5 * ties) / comparable_pairs;
 }
+
+// [[Rcpp::export]]
+List map_ko_to_taxon(DataFrame KOindex) {
+  CharacterVector function_col = KOindex["function."];
+  CharacterVector taxon_col = KOindex["taxon"];
+  
+  CharacterVector unique_functions = unique(function_col);
+  
+  List result(unique_functions.size());
+  result.attr("names") = unique_functions;
+  
+  std::unordered_map<std::string, std::set<std::string>> mapper;
+  
+  for (int i = 0; i < function_col.size(); i++) {
+    mapper[Rcpp::as<std::string>(function_col[i])].insert(Rcpp::as<std::string>(taxon_col[i]));
+  }
+  
+  for (int i = 0; i < unique_functions.size(); i++) {
+    std::string func = Rcpp::as<std::string>(unique_functions[i]);
+    CharacterVector taxons(mapper[func].begin(), mapper[func].end());
+    result[i] = taxons;
+  }
+  
+  return result;
+}
+
+
+// [[Rcpp::export]]
+double GSEA_run(NumericVector hit_loci, int refer_length) {
+  
+  double pos_score = 1.0 / hit_loci.size();
+  double neg_score = 1.0 / (refer_length - hit_loci.size());
+  double runing_score = 0.0;
+  double max_score = -999999.0;
+  int prev_loci = 0;
+  
+  for (int i = 0; i < hit_loci.size(); i++) {
+    int loci = hit_loci[i];
+    
+    int neg_length = loci - prev_loci;
+    runing_score -= neg_score * neg_length;
+    
+    runing_score += pos_score;
+    
+    if (runing_score > max_score) {
+      max_score = runing_score;
+    }
+    
+    prev_loci = loci + 1;
+  }
+  return max_score;
+}

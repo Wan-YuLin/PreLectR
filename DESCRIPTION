@@ -8,7 +8,7 @@ Author: c(person("Yin Cheng", "Chen", email = "yin.cheng.23@gmail.com", role = c
 Maintainer: Yin Cheng Chen <yin.cheng.23@gmail.com>
 Description: Implement the PreLect algorithm, integrating L1 regularization with an inverted prevalence penalty, to select universal and informative features in sparse data, particularly for microbiome studies.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.11), RcppArmadillo, matrixStats, MASS, scales, stats, utils, pROC, PRROC, rpart, ggplot2, patchwork, parallel, doParallel, foreach
+Imports: Rcpp (>= 1.0.11), RcppArmadillo, matrixStats, MASS, scales, stats, utils, pROC, PRROC, rpart, ggplot2, patchwork, parallel, doParallel, foreach, KEGGREST
 LinkingTo: Rcpp, RcppArmadillo
 Encoding: UTF-8
 LazyData: true

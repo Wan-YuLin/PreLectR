@@ -1,0 +1,64 @@
+---
+title: "Introduction to Data Visualization"
+subtitle: "Tutorial for NGSprint Data Visualization in Bioinformatics"
+author: "[Kasia Kedzierska](https://kasia.codes/)"
+date: "Created on 06 Sep, 2021 <br>Last compiled on `r format(Sys.time(), '%d %b, %Y')`"
+output: 
+  learnr::tutorial:
+    allow_skip: true
+    progressive: true
+---
+
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+
+`PreLectR` is an R package implementing the PreLect algorithm for feature engineering in sparse data. It supports four tasks: `binary classification`, `multi-class classification`, `regression`, and `time-to-event` analysis. The package leverages `RcppArmadillo` and `parallel` for enhanced performance. For 16S amplicon data, PreLectR provides a seamless workflow to integrate with DADA2 and includes downstream functional enrichment analysis using `PICRUSt2`, ensuring a user-friendly experience.
+
+
+
+Table of Contents
+====================
+- [Installation](#Installation)
+- [General usage](#general-usage)
+- [Special tasks](#lambda-tuning)
+- [16s amplicon bioinfoermation workflow](#selection-profile)
+- [Authors](#authors)
+- [Found a Bug](#found-a-bug)
+
+
+## Installation
+
+`PreLectR` can be installed from GitHub using:
+
+```{r, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("YinchengChen23/PreLectR")
+```
+
+Package dependencies:
+- for model estimation: `Rcpp` and `RcppArmadillo`
+- for parallel computing: `parallel`, `doParallel`, `foreach`
+- for graphical purposes: `ggplot2` and `patchwork` 
+- for functional enrichment analysis KEGG : `KEGGREST` 
+
+
+
+![R logo](man/figures/img1.png)
+
+
+## General usage
+
+
+$$
+f(t) = h_0(t)\cdot\ e^{xw}  
+$$
+

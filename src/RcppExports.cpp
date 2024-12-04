@@ -352,6 +352,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// map_ko_to_taxon
+List map_ko_to_taxon(DataFrame KOindex);
+RcppExport SEXP _PreLectR_map_ko_to_taxon(SEXP KOindexSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type KOindex(KOindexSEXP);
+    rcpp_result_gen = Rcpp::wrap(map_ko_to_taxon(KOindex));
+    return rcpp_result_gen;
+END_RCPP
+}
+// GSEA_run
+double GSEA_run(NumericVector hit_loci, int refer_length);
+RcppExport SEXP _PreLectR_GSEA_run(SEXP hit_lociSEXP, SEXP refer_lengthSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type hit_loci(hit_lociSEXP);
+    Rcpp::traits::input_parameter< int >::type refer_length(refer_lengthSEXP);
+    rcpp_result_gen = Rcpp::wrap(GSEA_run(hit_loci, refer_length));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PreLectR_get_prevalence", (DL_FUNC) &_PreLectR_get_prevalence, 1},
@@ -378,6 +401,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_PreLectR_proximal_GD_cox", (DL_FUNC) &_PreLectR_proximal_GD_cox, 9},
     {"_PreLectR_prelect_cox", (DL_FUNC) &_PreLectR_prelect_cox, 10},
     {"_PreLectR_concordance_index", (DL_FUNC) &_PreLectR_concordance_index, 3},
+    {"_PreLectR_map_ko_to_taxon", (DL_FUNC) &_PreLectR_map_ko_to_taxon, 1},
+    {"_PreLectR_GSEA_run", (DL_FUNC) &_PreLectR_GSEA_run, 2},
     {NULL, NULL, 0}
 };
 

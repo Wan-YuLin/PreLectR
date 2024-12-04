@@ -172,7 +172,7 @@ AutoScanningCoxPH <- function(X_scale, X_raw, event, duration, step=50, run_echo
 #' @return A list containing two elements:
 #' - `TuningResult`: A data frame of metrics for each lambda, including the number of selected features, prevalence, and performance metrics.
 #' - `PvlDistSummary`: A data frame summarizing prevalence distribution statistics (min, max, quartiles) for selected features at each lambda.
-#'
+#' @export
 LambdaTuningCoxPH <- function(X_scale, X_raw, event, duration, lmbdrange, outpath, spl_ratio=0.7, run_echo=FALSE,
                               max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){
   
@@ -284,6 +284,7 @@ LambdaTuningCoxPH <- function(X_scale, X_raw, event, duration, lmbdrange, outpat
 #' @return A list containing two elements:
 #' - `TuningResult`: A data frame of metrics for each lambda, including the number of selected features, prevalence, and performance metrics.
 #' - `PvlDistSummary`: A data frame summarizing prevalence distribution statistics (min, max, quartiles) for selected features at each lambda.
+#' @export
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach %dopar% foreach

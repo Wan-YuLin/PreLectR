@@ -75,7 +75,7 @@ PreLectMultiClass <- function(X_scale, X_raw, Y, lambda, run_echo=FALSE,
   for(i in 1:length(category)){
     best_w <- res$weights[1:nrow(X_raw),i]
     select_df[, i*2] <- best_w
-    select_df[, i*2+1]   <- ifelse(best_w > 0, category[i], paste0('non_',category[i]))
+    select_df[, i*2+1]   <- ifelse(best_w > 0, category[i], 'Rest')
     select_df[, i*2+1][best_w == 0] <- NA
     colnames(select_df)[i*2] <- paste0('coef_',category[i])
     colnames(select_df)[i*2+1]   <- paste0('tendency_',category[i])
