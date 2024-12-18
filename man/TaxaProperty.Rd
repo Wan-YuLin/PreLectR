@@ -33,7 +33,7 @@ X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_fea
 rownames(X_raw) <- paste0('feat',1:n_features)
 X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
 diagnosis <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
-diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign the 'health' is control sample
+diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign 'health' as control sample
 pvlvec <- GetPrevalence(X_raw)
 
 result <- PreLect(X_scaled, pvlvec, diagnosis, lambda=1e-4, task="classification")

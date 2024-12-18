@@ -110,7 +110,17 @@ PreLectMultiClass <- function(X_scale, X_raw, Y, lambda, run_echo=FALSE,
 #' diagnosis <- c('CRC','CRC','control','Adenoma','Adenoma','CRC','control','control','CRC','CRC')
 #' 
 #' lrange <- AutoScanningMultiClass(X_scaled, X_raw, diagnosis, step=30)
+#' 
 #' tuning_res <- LambdaTuningMultiClass(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
+#' 
+#' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
+#' # optimal lambda
+#' lmbd_picking$opt_lmbd
+#' 
+#' # segmented regression visualization
+#' library(patchwork)
+#' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 AutoScanningMultiClass <- function(X_scale, X_raw, Y, step=50, run_echo=FALSE,
                                    max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){
@@ -214,8 +224,18 @@ AutoScanningMultiClass <- function(X_scale, X_raw, Y, step=50, run_echo=FALSE,
 #' 
 #' diagnosis <- c('CRC','CRC','control','Adenoma','Adenoma','CRC','control','control','CRC','CRC')
 #' 
-#' lrange <- AutoScanningMultiClass(X_scaled, X_raw, diagnosis)
+#' lrange <- AutoScanningMultiClass(X_scaled, X_raw, diagnosis, step=30)
+#' 
 #' tuning_res <- LambdaTuningMultiClass(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
+#' 
+#' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
+#' # optimal lambda
+#' lmbd_picking$opt_lmbd
+#' 
+#' # segmented regression visualization
+#' library(patchwork)
+#' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 LambdaTuningMultiClass <- function(X_scale, X_raw, Y, lmbdrange, outpath, spl_ratio=0.7, run_echo=FALSE,
                                    max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){
@@ -365,6 +385,15 @@ LambdaTuningMultiClass <- function(X_scale, X_raw, Y, lmbdrange, outpath, spl_ra
 #' available_cores
 #' 
 #' tuning_res <- LambdaTuningMultiClassParallel(X_scaled, X_raw, diagnosis, lrange, n_cores=available_cores-2, outpath=getwd())
+#'
+#' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
+#' # optimal lambda
+#' lmbd_picking$opt_lmbd
+#' 
+#' # segmented regression visualization
+#' library(patchwork)
+#' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 LambdaTuningMultiClassParallel <- function(X_scale, X_raw, Y, lmbdrange, n_cores, outpath, spl_ratio=0.7, run_echo=FALSE,
                                            max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){

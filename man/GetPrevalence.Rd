@@ -15,3 +15,12 @@ A vector of prevalence for each feature.
 \description{
 Calculate prevalence of each feature.
 }
+\examples{
+set.seed(42)
+n_samples <- 10
+n_features <- 100
+X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+prevalence <- GetPrevalence(X_raw)
+prevalence
+
+}

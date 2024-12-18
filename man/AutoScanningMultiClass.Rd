@@ -55,6 +55,16 @@ X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
 diagnosis <- c('CRC','CRC','control','Adenoma','Adenoma','CRC','control','control','CRC','CRC')
 
 lrange <- AutoScanningMultiClass(X_scaled, X_raw, diagnosis, step=30)
+
 tuning_res <- LambdaTuningMultiClass(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
+
+lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+
+# optimal lambda
+lmbd_picking$opt_lmbd
+
+# segmented regression visualization
+library(patchwork)
+lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 
 }

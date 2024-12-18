@@ -1,14 +1,14 @@
 Package: PreLectR
 Type: Package
 Title: Feature Engineering in Sparse Matrices
-Version: 0.1.0
+Version: 0.2.3
 Date: 2024-10-31
 Author: c(person("Yin Cheng", "Chen", email = "yin.cheng.23@gmail.com", role = c("aut", "cre")),
           person("Chen-Ching", "Lin", email = "chenching.lin@nycu.edu.tw", role = c("aut")))
 Maintainer: Yin Cheng Chen <yin.cheng.23@gmail.com>
 Description: Implement the PreLect algorithm, integrating L1 regularization with an inverted prevalence penalty, to select universal and informative features in sparse data, particularly for microbiome studies.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.11), RcppArmadillo, matrixStats, MASS, scales, stats, utils, pROC, PRROC, rpart, ggplot2, patchwork, parallel, doParallel, foreach, KEGGREST
+Imports: Rcpp (>= 1.0.11), RcppArmadillo, matrixStats, MASS, scales, stats, utils, pROC, PRROC, rpart, ggplot2, patchwork, parallel, doParallel, foreach
 LinkingTo: Rcpp, RcppArmadillo
 Encoding: UTF-8
 LazyData: true

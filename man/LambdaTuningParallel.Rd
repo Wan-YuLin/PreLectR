@@ -82,7 +82,7 @@ lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummar
 lmbd_picking$opt_lmbd
 
 # segmented regression visualization
-# library(patchwork)
+library(patchwork)
 lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 
 }

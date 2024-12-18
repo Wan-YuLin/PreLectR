@@ -73,4 +73,13 @@ available_cores
 
 tuning_res <- LambdaTuningMultiClassParallel(X_scaled, X_raw, diagnosis, lrange, n_cores=available_cores-2, outpath=getwd())
 
+lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+
+# optimal lambda
+lmbd_picking$opt_lmbd
+
+# segmented regression visualization
+library(patchwork)
+lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
+
 }

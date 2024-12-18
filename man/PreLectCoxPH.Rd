@@ -58,10 +58,12 @@ n_features <- 100
 X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
 rownames(X_raw) <- paste0('feat',1:n_features)
 X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
-diagnosis <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
-diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign the 'health' is control sample
+
+events <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
+events <- ifelse(events == 'CRC', 1, 0) # 'CRC' sample is 1 and control sample is 0
+age <- c(64, 87, 46, 56, 47, 62, 51, 56, 81, 76)
 pvlvec <- GetPrevalence(X_raw)
 
-result <- PreLect(X_scaled, pvlvec, diagnosis, lambda=1e-4, task="classification")
+result <- PreLectCoxPH(X_scaled, pvlvec, event, age, lambda=1e-4)
 
 }

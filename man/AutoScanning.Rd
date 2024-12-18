@@ -58,13 +58,16 @@ X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
 diagnosis <- c('CRC','CRC','control','CRC','control','CRC','control','control','CRC','CRC')
 
 lrange <- AutoScanning(X_scaled, X_raw, diagnosis, task = "classification")
+
 tuning_res <- LambdaTuning(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
 
 lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+
 # optimal lambda
 lmbd_picking$opt_lmbd
+
 # segmented regression visualization
-# library(patchwork)
+library(patchwork)
 lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 
 }

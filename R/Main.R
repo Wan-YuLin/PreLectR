@@ -6,6 +6,13 @@
 #' @return A vector of prevalence for each feature.
 #' @export
 #' @useDynLib PreLectR, .registration = TRUE
+#' @examples
+#' set.seed(42)
+#' n_samples <- 10
+#' n_features <- 100
+#' X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+#' prevalence <- GetPrevalence(X_raw)
+#' prevalence
 #'
 GetPrevalence <- function(X){
   if (is.data.frame(X)) {
@@ -114,7 +121,7 @@ evaluation <- function(x_train, y_train, x_test, y_test, best_w, task) {
 #' rownames(X_raw) <- paste0('feat',1:n_features)
 #' X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
 #' diagnosis <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
-#' diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign the 'health' is control sample
+#' diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign 'health' as control sample
 #' pvlvec <- GetPrevalence(X_raw)
 #' 
 #' result <- PreLect(X_scaled, pvlvec, diagnosis, lambda=1e-4, task="classification")
@@ -206,13 +213,16 @@ PreLect <- function(X, pvl, Y, lambda, task='classification',
 #' diagnosis <- c('CRC','CRC','control','CRC','control','CRC','control','control','CRC','CRC')
 #' 
 #' lrange <- AutoScanning(X_scaled, X_raw, diagnosis, task = "classification")
+#' 
 #' tuning_res <- LambdaTuning(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
 #' 
 #' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
 #' # optimal lambda
 #' lmbd_picking$opt_lmbd
+#' 
 #' # segmented regression visualization
-#' # library(patchwork)
+#' library(patchwork)
 #' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 AutoScanning <- function(X_scale, X_raw, Y, task='classification', step=50, run_echo=FALSE,
@@ -338,11 +348,12 @@ AutoScanning <- function(X_scale, X_raw, Y, task='classification', step=50, run_
 #' tuning_res <- LambdaTuning(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
 #' 
 #' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
 #' # optimal lambda
 #' lmbd_picking$opt_lmbd
 #' 
 #' # segmented regression visualization
-#' # library(patchwork)
+#' library(patchwork)
 #' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 LambdaTuning <- function(X_scale, X_raw, Y, lmbdrange, outpath, task='classification', spl_ratio=0.7, run_echo=FALSE,
@@ -525,7 +536,7 @@ LambdaTuning <- function(X_scale, X_raw, Y, lmbdrange, outpath, task='classifica
 #' lmbd_picking$opt_lmbd
 #' 
 #' # segmented regression visualization
-#' # library(patchwork)
+#' library(patchwork)
 #' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 LambdaTuningParallel <- function(X_scale, X_raw, Y, lmbdrange, n_cores, outpath, task='classification', spl_ratio=0.7, run_echo=FALSE,
@@ -697,13 +708,16 @@ LambdaTuningParallel <- function(X_scale, X_raw, Y, lmbdrange, n_cores, outpath,
 #' diagnosis <- c('CRC','CRC','control','CRC','control','CRC','control','control','CRC','CRC')
 #' 
 #' lrange <- AutoScanning(X_scaled, X_raw, diagnosis, task = "classification")
+#' 
 #' tuning_res <- LambdaTuning(X_scaled, X_raw, diagnosis, lrange, outpath=getwd())
 #' 
 #' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
 #' # optimal lambda
 #' lmbd_picking$opt_lmbd
+#' 
 #' # segmented regression visualization
-#' # library(patchwork)
+#' library(patchwork)
 #' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 LambdaDecision <- function(TuningRes, PvlSummary, maxdepth=5, minbucket=3){

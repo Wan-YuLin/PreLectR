@@ -26,11 +26,13 @@
 #' X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
 #' rownames(X_raw) <- paste0('feat',1:n_features)
 #' X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
-#' diagnosis <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
-#' diagnosis <- factor(diagnosis, levels=c('health', 'CRC')) # assign the 'health' is control sample
+#' 
+#' events <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
+#' events <- ifelse(events == 'CRC', 1, 0) # 'CRC' sample is 1 and control sample is 0
+#' age <- c(64, 87, 46, 56, 47, 62, 51, 56, 81, 76)
 #' pvlvec <- GetPrevalence(X_raw)
 #' 
-#' result <- PreLect(X_scaled, pvlvec, diagnosis, lambda=1e-4, task="classification")
+#' result <- PreLectCoxPH(X_scaled, pvlvec, event, age, lambda=1e-4)
 #'
 PreLectCoxPH <- function(X, pvl, event, duration, lambda,
                          max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8, run_echo=FALSE){
@@ -84,6 +86,31 @@ PreLectCoxPH <- function(X, pvl, event, duration, lambda,
 #' @param epsilon  Numeric. Small constant added to the denominator to improve numerical stability (default is 1e-8).
 #' @return A vector for examining log-lambda.
 #' @export
+#' @examples
+#' set.seed(42)
+#' n_samples <- 10
+#' n_features <- 100
+#' 
+#' X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+#' rownames(X_raw) <- paste0('feat',1:n_features)
+#' X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
+#' 
+#' events <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
+#' events <- ifelse(events == 'CRC', 1, 0) # 'CRC' sample is 1 and control sample is 0
+#' age <- c(64, 87, 46, 56, 47, 62, 51, 56, 81, 76)
+#' 
+#' lrange <- AutoScanningCoxPH(X_scaled, X_raw, events, age, step=30)
+#' 
+#' tuning_res <- LambdaTuningCoxPH(X_scaled, X_raw, events, age, lrange, outpath=getwd())
+#' 
+#' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
+#' # optimal lambda
+#' lmbd_picking$opt_lmbd
+#' 
+#' # segmented regression visualization
+#' library(patchwork)
+#' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
 #'
 AutoScanningCoxPH <- function(X_scale, X_raw, event, duration, step=50, run_echo=FALSE,
                               max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){
@@ -173,6 +200,32 @@ AutoScanningCoxPH <- function(X_scale, X_raw, event, duration, step=50, run_echo
 #' - `TuningResult`: A data frame of metrics for each lambda, including the number of selected features, prevalence, and performance metrics.
 #' - `PvlDistSummary`: A data frame summarizing prevalence distribution statistics (min, max, quartiles) for selected features at each lambda.
 #' @export
+#' #' @examples
+#' set.seed(42)
+#' n_samples <- 10
+#' n_features <- 100
+#' 
+#' X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+#' rownames(X_raw) <- paste0('feat',1:n_features)
+#' X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
+#' 
+#' events <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
+#' events <- ifelse(events == 'CRC', 1, 0) # 'CRC' sample is 1 and control sample is 0
+#' age <- c(64, 87, 46, 56, 47, 62, 51, 56, 81, 76)
+#' 
+#' lrange <- AutoScanningCoxPH(X_scaled, X_raw, events, age, step=30)
+#' 
+#' tuning_res <- LambdaTuningCoxPH(X_scaled, X_raw, events, age, lrange, outpath=getwd())
+#' 
+#' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
+#' # optimal lambda
+#' lmbd_picking$opt_lmbd
+#' 
+#' # segmented regression visualization
+#' library(patchwork)
+#' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
+#'
 LambdaTuningCoxPH <- function(X_scale, X_raw, event, duration, lmbdrange, outpath, spl_ratio=0.7, run_echo=FALSE,
                               max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){
   
@@ -288,7 +341,36 @@ LambdaTuningCoxPH <- function(X_scale, X_raw, event, duration, lmbdrange, outpat
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach %dopar% foreach
+#' @examples
+#' set.seed(42)
+#' n_samples <- 10
+#' n_features <- 100
 #' 
+#' X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+#' rownames(X_raw) <- paste0('feat',1:n_features)
+#' X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
+#' 
+#' events <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
+#' events <- ifelse(events == 'CRC', 1, 0) # 'CRC' sample is 1 and control sample is 0
+#' age <- c(64, 87, 46, 56, 47, 62, 51, 56, 81, 76)
+#' 
+#' lrange <- AutoScanningCoxPH(X_scaled, X_raw, events, age, step=30)
+#' 
+#' # How many cores usage available
+#' available_cores <- parallel::detectCores()
+#' available_cores
+#' 
+#' tuning_res <- LambdaTuningCoxPHParallel(X_scaled, X_raw, events, age, lrange, n_cores = available_cores-2, outpath=getwd())
+#' 
+#' lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+#' 
+#' # optimal lambda
+#' lmbd_picking$opt_lmbd
+#' 
+#' # segmented regression visualization
+#' library(patchwork)
+#' lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
+#'
 LambdaTuningCoxPHParallel <- function(X_scale, X_raw, event, duration, lmbdrange, n_cores, outpath, spl_ratio=0.7, run_echo=FALSE,
                                       max_iter=10000, tol=1e-4, lr=0.001, alpha=0.9, epsilon=1e-8){
   

@@ -47,3 +47,30 @@ A vector for examining log-lambda.
 \description{
 This function scans a range of lambda values from 1e-10 to 0.1, identifying the upper and lower boundaries that represent when lasso starts filtering and when it drops all features. The range is divided into `k` parts for examining lambda values.
 }
+\examples{
+set.seed(42)
+n_samples <- 10
+n_features <- 100
+
+X_raw <- matrix(rnbinom(n_features * n_samples, size = 10, mu = 1), nrow = n_features, ncol = n_samples)
+rownames(X_raw) <- paste0('feat',1:n_features)
+X_scaled <- t(scale(t(X_raw)))  # feature-wise z-standardization
+
+events <- c('CRC','CRC','health','CRC','health','CRC','health','health','CRC','CRC')
+events <- ifelse(events == 'CRC', 1, 0) # 'CRC' sample is 1 and control sample is 0
+age <- c(64, 87, 46, 56, 47, 62, 51, 56, 81, 76)
+
+lrange <- AutoScanningCoxPH(X_scaled, X_raw, events, age, step=30)
+
+tuning_res <- LambdaTuningCoxPH(X_scaled, X_raw, events, age, lrange, outpath=getwd())
+
+lmbd_picking <- LambdaDecision(tuning_res$TuningResult, tuning_res$PvlDistSummary)
+
+# optimal lambda
+lmbd_picking$opt_lmbd
+
+# segmented regression visualization
+library(patchwork)
+lmbd_picking$selected_lmbd_plot/lmbd_picking$pvl_plot
+
+}
