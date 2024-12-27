@@ -20,6 +20,8 @@ Table of Contents
 - [General usage](#gu)
 - [Special tasks](#st)
 - [Tutorial for amplicon data](#ta)
+- [License](#li)
+- [Citing Resources](#cr)
 - [Found a Bug](#fb)
 
 ***
@@ -332,10 +334,11 @@ print(lmbd_picking$opt_lmbd)
 PreLect execution and get the property for each feature
 
 ```{r, eval = TRUE, message=FALSE, warning=FALSE, collapse=TRUE}
-prevalence <- GetPrevalence(data)
+# We strongly suggest using 100000 for max_iter to achieve more accurate results.
 
 s=Sys.time()
-PreLect_out <- PreLect(data_scaled, prevalence, meta$Class, lambda=lmbd_picking$opt_lmbd)
+prevalence <- GetPrevalence(data)
+PreLect_out <- PreLect(data_scaled, prevalence, meta$Class, lambda=lmbd_picking$opt_lmbd, max_iter = 100000)
 print(Sys.time()-s)
 
 
@@ -386,7 +389,7 @@ head(result$selectedInfo)
 
 ### Functional prediction analysis
 
-Prepare files for running PICRUSt2 by extracting the selected ASVs.
+Prepare files for running [PICRUSt2](https://huttenhower.sph.harvard.edu/picrust/) by extracting the selected ASVs.
 
 ```{r, eval = TRUE, message=FALSE, warning=FALSE, collapse=TRUE}
 # please ensure the "ASV.fasta" is in "output_path" directory
@@ -507,6 +510,24 @@ ggplot(enrichPW, aes(x = pathway, y = count, fill = q)) + ggtitle('Enhanced in c
 
 
 ```
+***
+
+<span id="li"> </span>
+
+## License
+
+This code is made available under the CC BY-NC 4.0 license for non-commercial research applications.
+
+For more details, see the [LICENSE](./LICENSE) file.
+
+***
+
+<span id="cr"> </span>
+
+## Citing Resources
+
+coming soon
+
 ***
 
 <span id="fb"> </span>

@@ -1,7 +1,7 @@
 PreLectR
 ================
 Yin Cheng Chen
-Created on 05 Dec, 2024 <br>Last compiled on 18 Dec, 2024
+Created on 05 Dec, 2024 <br>Last compiled on 27 Dec, 2024
 
 `PreLectR` is an R package implementing the PreLect algorithm for
 feature engineering in sparse data. It supports four tasks: binary
@@ -18,6 +18,8 @@ user-friendly experience.
 - [General usage](#gu)
 - [Special tasks](#st)
 - [Tutorial for amplicon data](#ta)
+- [License](#li)
+- [Citing Resources](#cr)
 - [Found a Bug](#fb)
 
 ------------------------------------------------------------------------
@@ -93,7 +95,7 @@ diagnosis <- factor(diagnosis, levels = c('control', 'CRC'))
 
                                          # task = "classification" OR "regression"
 lrange <- AutoScanning(X_scaled, X_raw, diagnosis, task = "classification", step=30)
-  |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
+|======================================================================| 100%
 
 print(exp(lrange))
  [1] 0.0001000000 0.0001172102 0.0001373824 0.0001610262 0.0001887392
@@ -120,7 +122,7 @@ also use `LambdaTuningParallel` to accelerate the calculation process.
 ``` r
 output_dir <- '/home/yincheng23/Course/PLdemo/try1'                # task = "classification" OR "regression"
 tuning_res <- LambdaTuning(X_scaled, X_raw, diagnosis, lrange, outpath=output_dir, spl_ratio=0.7, task="classification")
-  |                                                                              |                                                                      |   0%  |                                                                              |==                                                                    |   3%  |                                                                              |=====                                                                 |   7%  |                                                                              |=======                                                               |  10%  |                                                                              |=========                                                             |  13%  |                                                                              |============                                                          |  17%  |                                                                              |==============                                                        |  20%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |=====================                                                 |  30%  |                                                                              |=======================                                               |  33%  |                                                                              |==========================                                            |  37%  |                                                                              |============================                                          |  40%  |                                                                              |==============================                                        |  43%  |                                                                              |=================================                                     |  47%  |                                                                              |===================================                                   |  50%  |                                                                              |=====================================                                 |  53%  |                                                                              |========================================                              |  57%  |                                                                              |==========================================                            |  60%  |                                                                              |============================================                          |  63%  |                                                                              |===============================================                       |  67%  |                                                                              |=================================================                     |  70%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |========================================================              |  80%  |                                                                              |==========================================================            |  83%  |                                                                              |=============================================================         |  87%  |                                                                              |===============================================================       |  90%  |                                                                              |=================================================================     |  93%  |                                                                              |====================================================================  |  97%  |                                                                              |======================================================================| 100%
+  |======================================================================| 100%
 
 
 print(dir(output_dir))
@@ -140,7 +142,7 @@ head(tuning_res$TuningResult)
     3             22       0.22        0.7 1.00  0.002823790  0.0001826157
     4             21       0.21        0.7 1.00  0.003294346  0.0002019210
     5             20       0.20        0.7 1.00  0.003827315  0.0002130905
-    6             17       0.17        0.8 1.00  0.004409772  0.0002122248
+    6             17       0.17        0.8 1.00  0.004409772  0.0002122246
         loglmbd
     1 -9.210340
     2 -9.051541
@@ -205,7 +207,7 @@ prevalence <- GetPrevalence(X_raw)
 s=Sys.time()
 PreLect_out <- PreLect(X_scaled, prevalence, diagnosis, lambda=lmbd_picking$opt_lmbd, task="classification")
 print(Sys.time()-s)
-Time difference of 0.02793145 secs
+Time difference of 0.03057027 secs
 
 
 featpropt <- FeatureProperty(X_raw, diagnosis, PreLect_out, task="classification")
@@ -346,8 +348,9 @@ output_path <- '/home/yincheng23/Course/PLdemo/try2'
 # generate the raw count table, taxa table and ASV sequence fasta
 DADA2Adapter(seqtab.nochim, taxa, output_path)
 dir(output_path)
-[1] "ASV_table.txt"      "ASV_taxa_table.txt" "ASV.fasta"         
-[4] "PICRUSt2"          
+[1] "ASV_table.txt"        "ASV_taxa_table.txt"   "ASV.fasta"           
+[4] "for_PICRUSt2.tsv"     "PICRUSt2"             "Pvl_distribution.csv"
+[7] "TuningResult.csv"    
 ```
 
 Based on [previous
@@ -388,7 +391,7 @@ examination.
 ``` r
 meta$Class <- factor(meta$Class, levels = c("Normal", "Cancer"))  # assign "Normal" as control sample
 lrange <- AutoScanning(data_scaled, data, meta$Class, step =30)
-  |                                                                              |                                                                      |   0%  |                                                                              |=======                                                               |  10%  |                                                                              |==============                                                        |  20%  |                                                                              |=====================                                                 |  30%  |                                                                              |============================                                          |  40%  |                                                                              |===================================                                   |  50%  |                                                                              |==========================================                            |  60%  |                                                                              |=================================================                     |  70%  |                                                                              |========================================================              |  80%  |                                                                              |===============================================================       |  90%  |                                                                              |======================================================================| 100%
+  |======================================================================| 100%
 length(lrange)
 [1] 30
 exp(lrange)
@@ -458,30 +461,31 @@ print(lmbd_picking$opt_lmbd)
 PreLect execution and get the property for each feature
 
 ``` r
-prevalence <- GetPrevalence(data)
+# We strongly suggest using 100000 for max_iter to achieve more accurate results.
 
 s=Sys.time()
-PreLect_out <- PreLect(data_scaled, prevalence, meta$Class, lambda=lmbd_picking$opt_lmbd)
+prevalence <- GetPrevalence(data)
+PreLect_out <- PreLect(data_scaled, prevalence, meta$Class, lambda=lmbd_picking$opt_lmbd, max_iter = 100000)
 print(Sys.time()-s)
-Time difference of 2.208462 secs
+Time difference of 3.012482 secs
 
 
 featpropt <- FeatureProperty(data, meta$Class, PreLect_out, task="classification")
 
 print(paste(nrow(featpropt[featpropt$selected == 'Selected', ]), 'features were selected'))
-[1] "358 features were selected"
+[1] "336 features were selected"
 
 print(paste('median of prevalence :', median(featpropt$prevalence[featpropt$selected == 'Selected'])))
-[1] "median of prevalence : 0.4"
+[1] "median of prevalence : 0.425"
 
 head(featpropt)
         FeatName        coef tendency selected meanAbundance   variance
-ASV0001  ASV0001  0.53151508   Cancer Selected    0.04150302  117734960
-ASV0002  ASV0002 -0.41757598   Normal Selected    0.03167390   64237504
+ASV0001  ASV0001  0.54988067   Cancer Selected    0.04150302  117734960
+ASV0002  ASV0002 -0.42573824   Normal Selected    0.03167390   64237504
 ASV0003  ASV0003  0.00000000     <NA>   Others    0.01213962 1555924984
-ASV0004  ASV0004 -0.32173040   Normal Selected    0.03201389  288009324
-ASV0005  ASV0005 -0.31919123   Normal Selected    0.02903994   41768447
-ASV0006  ASV0006 -0.02955327   Normal Selected    0.02485074   72058376
+ASV0004  ASV0004 -0.33145665   Normal Selected    0.03201389  288009324
+ASV0005  ASV0005 -0.32683697   Normal Selected    0.02903994   41768447
+ASV0006  ASV0006 -0.03458693   Normal Selected    0.02485074   72058376
         prevalence prevalence_case prevalence_control      logFC
 ASV0001      1.000            1.00               1.00  1.4998663
 ASV0002      0.975            0.95               1.00 -0.6884894
@@ -534,12 +538,12 @@ result$effectSizePlot + scale_fill_manual(values = mycolor) +
 
 head(result$selectedInfo)
         FeatName       coef tendency selected meanAbundance  variance
-ASV0001  ASV0001  0.5315151   Cancer Selected    0.04150302 117734960
-ASV0002  ASV0002 -0.4175760   Normal Selected    0.03167390  64237504
-ASV0005  ASV0005 -0.3191912   Normal Selected    0.02903994  41768447
-ASV0007  ASV0007  1.0081118   Cancer Selected    0.03158703 178336011
-ASV0008  ASV0008 -0.2902587   Normal Selected    0.02299001 312317781
-ASV0009  ASV0009 -0.4816386   Normal Selected    0.02042962  45214122
+ASV0001  ASV0001  0.5498807   Cancer Selected    0.04150302 117734960
+ASV0002  ASV0002 -0.4257382   Normal Selected    0.03167390  64237504
+ASV0005  ASV0005 -0.3268370   Normal Selected    0.02903994  41768447
+ASV0007  ASV0007  1.0654049   Cancer Selected    0.03158703 178336011
+ASV0008  ASV0008 -0.3002699   Normal Selected    0.02299001 312317781
+ASV0009  ASV0009 -0.4994069   Normal Selected    0.02042962  45214122
         prevalence prevalence_case prevalence_control      logFC
 ASV0001      1.000            1.00               1.00  1.4998663
 ASV0002      0.975            0.95               1.00 -0.6884894
@@ -558,7 +562,9 @@ ASV0009    Lachnospiraceae
 
 ### Functional prediction analysis
 
-Prepare files for running PICRUSt2 by extracting the selected ASVs.
+Prepare files for running
+[PICRUSt2](https://huttenhower.sph.harvard.edu/picrust/) by extracting
+the selected ASVs.
 
 ``` r
 # please ensure the "ASV.fasta" is in "output_path" directory
@@ -642,15 +648,15 @@ Actived_result <- Actived_result[!is.na(Actived_result$z), ]
 Actived_result <- Actived_result[Actived_result$z > 2,]
 Actived_result <- Actived_result[Actived_result$p < 0.05,]
 nrow(Actived_result)
-[1] 469
+[1] 621
 head(Actived_result)
        KO        ES        z     p
-16 K09019 0.5439093 2.023025 0.030
-24 K13498 0.6471429 2.425284 0.017
-38 K13522 0.7359551 2.146245 0.025
-42 K10194 0.4500000 2.028016 0.038
-57 K00240 0.2728587 2.611608 0.017
-59 K18302 0.6751412 2.524061 0.012
+3  K03669 0.5714286 2.161244 0.033
+12 K00341 0.3318762 2.892447 0.008
+25 K06190 0.4003334 2.164159 0.036
+41 K12145 0.9341317 2.107271 0.021
+46 K09020 0.6435045 3.041743 0.004
+47 K07803 0.6151515 2.448100 0.011
 ```
 
 Since `PICRUSt2` does not provide detailed information for each KO, we
@@ -691,23 +697,23 @@ enrichPW <- PathwayEnrichment(selected_KOs, KOinfo)
 enrichPW$q <- p.adjust(enrichPW$p, method = 'fdr')
 enrichPW <- enrichPW[enrichPW$q < 0.05, ]
 nrow(enrichPW)
-[1] 6
+[1] 8
 
 head(enrichPW)
-                                                    pathway       id count
-14                                Citrate cycle (TCA cycle) map00020    11
-22                                   Lipoic acid metabolism map00785     8
-25  Biosynthesis of siderophore group nonribosomal peptides map01053     6
-30                                    Pyrimidine metabolism map00240    15
-109                              Bacterial secretion system map03070    14
-110                     Biofilm formation - Vibrio cholerae map05111    14
-        ratio            p odds_ratio            q
-14  0.2444444 1.141320e-03   3.525195 2.720146e-02
-22  0.3636364 2.950988e-04   6.223018 2.109957e-02
-25  0.4000000 9.263168e-04   7.303934 2.720146e-02
-30  0.2238806 4.536844e-04   3.143378 2.162562e-02
-109 0.2153846 1.109857e-03   2.964587 2.720146e-02
-110 0.3888889 6.723719e-07   6.974973 9.614918e-05
+                              pathway       id count     ratio            p
+20  Degradation of aromatic compounds map01220    18 0.3529412 2.048176e-06
+25             Lipoic acid metabolism map00785     9 0.4090909 1.946904e-04
+28          Oxidative phosphorylation map00190    19 0.2467532 4.483959e-04
+59               Benzoate degradation map00362    18 0.3529412 2.057379e-06
+108        Fluorobenzoate degradation map00364     6 0.6000000 1.775168e-04
+130        Bacterial secretion system map03070    16 0.2461538 9.096101e-04
+    odds_ratio            q
+20    4.771816 0.0001892788
+25    6.055179 0.0071646052
+28    2.863765 0.0137508087
+59    4.770150 0.0001892788
+108  13.110982 0.0071646052
+130   2.831613 0.0239097509
 ```
 
 ``` r
@@ -724,6 +730,25 @@ ggplot(enrichPW, aes(x = pathway, y = count, fill = q)) + ggtitle('Enhanced in c
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-31-1.png)<!-- --> \*\*\*
+
+<span id="li"> </span>
+
+## License
+
+This code is made available under the CC BY-NC 4.0 license for
+non-commercial research applications.
+
+For more details, see the [LICENSE](LICENSE) file.
+
+------------------------------------------------------------------------
+
+<span id="cr"> </span>
+
+## Citing Resources
+
+coming soon
+
+------------------------------------------------------------------------
 
 <span id="fb"> </span>
 
