@@ -746,7 +746,7 @@ For more details, see the [LICENSE](LICENSE) file.
 
 ## Citing Resources
 
-coming soon
+Chen, YC., Su, YY., Chu, TY. et al. PreLect: Prevalence leveraged consistent feature selection decodes microbial signatures across cohorts. npj Biofilms Microbiomes 11, 3 (2025). https://doi.org/10.1038/s41522-024-00598-2
 
 ------------------------------------------------------------------------
 
